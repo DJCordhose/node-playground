@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.2.0-rc.3/angular-resource.min.js"></script>
+</head>
+<body ng-app="MyApp">
+<form ng-controller="ctrl">
+    <input type="number" ng-model="a">
+    <input type="number" ng-model="b">
+    <button ng-click="sum(a,b)">Berechnung</button>
+    <span>{{res|currency|euro}}</span>
+    <button ng-click="get()">Daten laden</button>
+    <span>{{product}}</span>
+    <div>{{i}}</div>
+</form>
+
+
+        <script>
+        // erst $http
+// dann $ngResource
+// dann directive
+// Umbauen auf Darlehensrechner mit Daten speichern
+    var myApp = angular.module('MyApp', []);
+    myApp.controller('ctrl', ['$scope', 'service', '$http', function ($scope, service, $http) {
+        $scope.sum = function(a,b) {
+            $scope.res = service.sum(a, b);
+        };
+        $scope.get = function() {
+            $http.get('/articles/1').success(function(data) {
+                $scope.product = data;
+            });
+        };
+        $scope.i = 0;
+        setInterval(function() {
+            $scope.$apply(function() {
+                $scope.i = $scope.i + 1;
+            })
+        }, 1000);
+    }]);
+    myApp.factory('service', function() {
+        return {
+            sum: function(a, b) {
+                return a + b;
+            }
+        };
+    });
+    myApp.filter('euro', function() {
+       return function(money) {
+           return money.replace('$', '€');
+       }
+    });
+</script>
+</body>
+</html>
